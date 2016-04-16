@@ -219,7 +219,8 @@
   (interactive)
   (when hyde/serve-process
     (delete-process hyde/serve-process)
-    (setq hyde/serve-process nil)))
+    (setq hyde/serve-process nil)
+    (message "Stopped server")))
 
 (defun hyde/serve ()
   "Serves jekyll to localhost in an asynchronous process. If
@@ -227,8 +228,10 @@ already started, stops and restarts."
   (interactive)
   (hyde/stop-serve)
   (setq hyde/serve-process
-   (start-process-shell-command "hyde/serve" "*hyde/serve*"
-    (format "cd %s && %s" (expand-file-name hyde-home) hyde/serve-command))))
+        (async-shell-command
+         (format "cd %s && %s" (expand-file-name hyde-home) hyde/serve-command)
+         "*hyde/serve*"))
+  (message (format "Started server with command: %s" hyde/serve-command)))
 
 (defun hyde/deploy ()
   "Deploys the generated website (should be run after hyde/run-jekyll"
